@@ -36,7 +36,7 @@ public class BookingTools {
 			String from, String to, String bookingClass) {
 	}
 
-	@Bean
+	@Bean()
 	@Description("获取机票预定详细信息")
 	public Function<BookingDetailsRequest, BookingDetails> getBookingDetails() {
 		return request -> {
@@ -50,7 +50,7 @@ public class BookingTools {
 		};
 	}
 
-	@Bean
+	@Bean()
 	@Description("修改机票预定日期")
 	public Function<ChangeBookingDatesRequest, String> changeBooking() {
 		return request -> {
@@ -60,7 +60,7 @@ public class BookingTools {
 		};
 	}
 
-	@Bean
+	@Bean()
 	@Description("取消机票预定")
 	public Function<CancelBookingRequest, String> cancelBooking() {
 		return request -> {
