@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bit</groupId>
-    <artifactId>flight-booking</artifactId>
+    <artifactId>mcp-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>flight-booking</name>
-    <description>flight-booking</description>
+    <name>mcp-server</name>
+    <description>mcp-server</description>
     <url/>
     <licenses>
         <license/>
@@ -23,48 +23,35 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <!-- Spring AI -->
+        <spring-ai.version>1.0.0-M6</spring-ai.version>
+
+        <!-- Spring AI Alibaba -->
+        <spring-ai-alibaba.version>1.0.0-M6.1</spring-ai-alibaba.version>
         <!-- Spring Boot -->
         <spring-boot.version>3.4.0</spring-boot.version>
-        <!-- Spring AI -->
-        <spring-ai-alibaba.version>1.0.0-M6.1</spring-ai-alibaba.version>
-        <spring-ai.version>1.0.0-M6</spring-ai.version>
+
+
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
-      <!--  <dependency>
-            <groupId>com.alibaba.cloud.ai</groupId>
-            <artifactId>spring-ai-alibaba-starter</artifactId>
-            <version>${spring-ai-alibaba.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-mcp-client-webflux-spring-boot-starter</artifactId>
+            <artifactId>spring-ai-mcp-server-webflux-spring-boot-starter</artifactId>
             <version>${spring-ai.version}</version>
         </dependency>
-       <!-- <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
-            <version>${spring-ai.version}</version>
-        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-            <version>${spring-ai.version}</version>
-        </dependency>
-      <!--  <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-qianfan-spring-boot-starter</artifactId>
-            <version>1.0.0-M6</version>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -90,6 +77,15 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
     <repositories>
         <repository>
             <name>Central Portal Snapshots</name>
@@ -119,13 +115,4 @@
             </releases>
         </repository>
     </repositories>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

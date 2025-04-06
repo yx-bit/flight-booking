@@ -3,6 +3,7 @@ package com.bit.flightbooking.playground.client;
 import com.bit.flightbooking.playground.services.CustomerSupportAssistant;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
@@ -18,7 +19,7 @@ public class AssistantController {
 	}
 
 	@RequestMapping(path="/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<String> chat(String chatId, String userMessage) {
+	public Flux<String> chat(@RequestParam("chatId")String chatId,@RequestParam("userMessage") String userMessage) {
 		return agent.chat(chatId, userMessage);
 	}
 

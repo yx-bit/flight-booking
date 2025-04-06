@@ -22,6 +22,7 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class CustomerSupportAssistant {
 
 	private final ChatClient chatClient;
 
-	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
+	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,BookingTools bookingTools,ToolCallbackProvider toolCallbackProvider) {
 
 		// @formatter:off
 		this.chatClient = ChatClient.builder(chatModel)
@@ -66,8 +67,8 @@ public class CustomerSupportAssistant {
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
 
 						new SimpleLoggerAdvisor())
-				.defaultTools("getBookingDetails", "changeBooking", "cancelBooking") // FUNCTION CALLING
-
+				.defaultTools(toolCallbackProvider)
+				.defaultTools(bookingTools)
 				.build();
 		// @formatter:on
 	}

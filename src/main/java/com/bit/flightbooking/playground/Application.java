@@ -1,14 +1,16 @@
 package com.bit.flightbooking.playground;
 
+import com.bit.flightbooking.playground.services.BookingTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.reader.TextReader;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallback;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -35,7 +37,7 @@ public class Application  {
 	// In the real world, ingesting documents would often happen separately, on a CI
 	// server or similar.
 	@Bean
-	CommandLineRunner ingestTermOfServiceToVectorStore(@Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel, VectorStore vectorStore,
+	CommandLineRunner ingestTermOfServiceToVectorStore(EmbeddingModel embeddingModel, VectorStore vectorStore,
 													   @Value("classpath:rag/terms-of-service.txt") Resource termsOfServiceDocs) {
 
 		return args -> {
@@ -49,7 +51,7 @@ public class Application  {
 	}
 
 	@Bean
-	public VectorStore vectorStore(@Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
+	public VectorStore vectorStore( EmbeddingModel embeddingModel) {
 		return SimpleVectorStore.builder(embeddingModel).build();
 	}
 
@@ -63,4 +65,6 @@ public class Application  {
 	public RestClient.Builder restClientBuilder() {
 		return RestClient.builder();
 	}
+
+
 }
