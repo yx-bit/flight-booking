@@ -16,8 +16,9 @@ public class McpServerApplication {
         SpringApplication.run(McpServerApplication.class, args);
     }
 
-    @Bean
+  /* @Bean
     public ToolCallbackProvider weatherTools(OpenMeteoService weatherService) {
+       System.out.println("sdsds ");
         return MethodToolCallbackProvider.builder().toolObjects(weatherService).build();
-    }
+    }*/
 }
