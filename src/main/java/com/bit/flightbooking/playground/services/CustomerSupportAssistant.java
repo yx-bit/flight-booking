@@ -22,13 +22,16 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallback;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -41,7 +44,7 @@ public class CustomerSupportAssistant {
 
 	private final ChatClient chatClient;
 
-	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,BookingTools bookingTools,ToolCallbackProvider toolCallbackProvider) {
+	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,  /*BookingTools bookingTools,*/ ToolCallbackProvider[] toolCallbackProvider) {
 
 		// @formatter:off
 		this.chatClient = ChatClient.builder(chatModel)
@@ -67,8 +70,11 @@ public class CustomerSupportAssistant {
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
 
 						new SimpleLoggerAdvisor())
+
 				.defaultTools(toolCallbackProvider)
+/*
 				.defaultTools(bookingTools)
+*/
 				.build();
 		// @formatter:on
 	}
