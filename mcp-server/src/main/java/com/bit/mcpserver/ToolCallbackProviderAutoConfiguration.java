@@ -1,6 +1,5 @@
 package com.bit.mcpserver;
 
-import org.springframework.ai.autoconfigure.mcp.server.MpcServerAutoConfiguration;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -8,14 +7,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
 @Configuration
-//@AutoConfigureBefore(MpcServerAutoConfiguration.class) // 替换为目标AutoConfiguration
 public class ToolCallbackProviderAutoConfiguration {
 
     @Bean

@@ -17,24 +17,20 @@
 package com.bit.flightbooking.playground.services;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.ai.tool.method.MethodToolCallback;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
+import static org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor.TOP_K;
+import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
 
 /**
  * * @author Christian Tzolov
@@ -42,11 +38,11 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 @Service
 public class CustomerSupportAssistant {
 
-	private final ChatClient chatClient;
+    private final ChatClient chatClient;
 
-	public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,  /*BookingTools bookingTools,*/ ToolCallbackProvider[] toolCallbackProvider) {
+    public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,  /*BookingTools bookingTools,*/ ToolCallbackProvider[] toolCallbackProvider) {
 
-		// @formatter:off
+        // @formatter:off
 		this.chatClient = ChatClient.builder(chatModel)
 				.defaultSystem("""
 						您是“Funnair”航空公司的客户聊天支持代理。请以友好、乐于助人且愉快的方式来回复。
@@ -62,31 +58,32 @@ public class CustomerSupportAssistant {
 					   今天的日期是 {current_date}.
 					""")
 				.defaultAdvisors(
-						new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
+						MessageChatMemoryAdvisor.builder(chatMemory)
+								.build(),// Chat Memory
 						// new VectorStoreChatMemoryAdvisor(vectorStore)),
-					
-						new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build()), // RAG
+
+						QuestionAnswerAdvisor.builder(vectorStore).build(), // RAG
 						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
 						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
 
 						new SimpleLoggerAdvisor())
 
-				.defaultTools(toolCallbackProvider)
+				.defaultToolCallbacks(toolCallbackProvider)
 /*
 				.defaultTools(bookingTools)
 */
 				.build();
 		// @formatter:on
-	}
+    }
 
-	public Flux<String> chat(String chatId, String userMessageContent) {
+    public Flux<String> chat(String chatId, String userMessageContent) {
 
-		return this.chatClient.prompt()
-			.system(s -> s.param("current_date", LocalDate.now().toString()))
-			.user(userMessageContent)
-			.advisors(a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId).param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
-			.stream()
-			.content();
-	}
+        return this.chatClient.prompt()
+                .system(s -> s.param("current_date", LocalDate.now().toString()))
+                .user(userMessageContent)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId).param(TOP_K, 100))
+                .stream()
+                .content();
+    }
 
 }

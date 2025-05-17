@@ -1,24 +1,16 @@
 package com.bit.flightbooking.playground;
 
-import com.bit.flightbooking.playground.services.BookingTools;
 import org.neo4j.driver.Driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.embedding.TokenCountBatchingStrategy;
 import org.springframework.ai.reader.TextReader;
-import org.springframework.ai.tool.ToolCallback;
-import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.ai.tool.method.MethodToolCallback;
-import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.neo4j.Neo4jVectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,7 +43,7 @@ public class Application  {
 			if (nativeClient.isPresent()) {
 				Driver driver = nativeClient.get();
 				//判断是否存在数据
-				if (driver.session().readTransaction(tx -> tx.run("MATCH (n) RETURN count(n)").single().get(0).asLong() > 0)) {
+				if (driver.session().executeRead(tx -> tx.run("MATCH (n) RETURN count(n)").single().get(0).asLong() > 0)) {
 					logger.info("Vector store already populated");
 					return;
 				}else{
@@ -77,7 +69,7 @@ public class Application  {
 
 	@Bean
 	public ChatMemory chatMemory() {
-		return new InMemoryChatMemory();
+		return MessageWindowChatMemory.builder().build();
 	}
 
 	@Bean
