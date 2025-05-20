@@ -16,21 +16,20 @@
 
 package com.bit.flightbooking.playground.services;
 
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.ai.vectorstore.VectorStore;
+import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.chat.StreamingChatModel;
+import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.tool.ToolProvider;
+
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor.TOP_K;
-import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
 
 /**
  * * @author Christian Tzolov
@@ -38,52 +37,35 @@ import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
 @Service
 public class CustomerSupportAssistant {
 
-    private final ChatClient chatClient;
+    private final BookingAssistant chatClient;
 
-    public CustomerSupportAssistant(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory,  /*BookingTools bookingTools,*/ ToolCallbackProvider[] toolCallbackProvider) {
+	public CustomerSupportAssistant(BookingAssistant chatClient) {
+		this.chatClient = chatClient;
+	}
 
-        // @formatter:off
-		this.chatClient = ChatClient.builder(chatModel)
-				.defaultSystem("""
-						您是“Funnair”航空公司的客户聊天支持代理。请以友好、乐于助人且愉快的方式来回复。
-						您正在通过在线聊天系统与客户互动。
-						您能够支持已有机票的预订详情查询、机票日期改签、机票预订取消等操作，其余功能将在后续版本中添加，如果用户问的问题不支持请告知详情。
-					   在提供有关机票预订详情查询、机票日期改签、机票预订取消等操作之前，您必须始终从用户处获取以下信息：预订号、客户姓名。
-					   在询问用户之前，请检查消息历史记录以获取预订号、客户姓名等信息，尽量避免重复询问给用户造成困扰。
-					   在更改预订之前，您必须确保条款允许这样做。
-					   如果更改需要收费，您必须在继续之前征得用户同意。
-					   使用提供的功能获取预订详细信息、更改预订和取消预订。
-					   如果需要，您可以调用相应函数辅助完成。
-					   请讲中文。
-					   今天的日期是 {current_date}.
-					""")
-				.defaultAdvisors(
-						MessageChatMemoryAdvisor.builder(chatMemory)
-								.build(),// Chat Memory
-						// new VectorStoreChatMemoryAdvisor(vectorStore)),
-
-						QuestionAnswerAdvisor.builder(vectorStore).build(), // RAG
-						// new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
-						// 	.withFilterExpression("'documentType' == 'terms-of-service' && region in ['EU', 'US']")),
-
-						new SimpleLoggerAdvisor())
-
-				.defaultToolCallbacks(toolCallbackProvider)
-/*
-				.defaultTools(bookingTools)
-*/
-				.build();
-		// @formatter:on
-    }
+//    public CustomerSupportAssistant(OpenAiChatModel chatModel, StreamingChatModel streamingChatModel, ContentRetriever contentRetriever, List<ToolSpecification> toolSpecifications) {
+//
+//        // @formatter:off
+//		this.chatClient = AiServices.builder(BookingAssistant.class)
+//				.chatModel(chatModel)
+//				.streamingChatModel(streamingChatModel)
+//				.chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+//				.contentRetriever(contentRetriever)
+//				.tools(toolSpecifications)
+//
+//				.build();
+//		// @formatter:on
+//    }
 
     public Flux<String> chat(String chatId, String userMessageContent) {
+//        return this.chatClient.prompt()
+//                .system(s -> s.param("current_date", LocalDate.now().toString()))
+//                .user(userMessageContent)
+//                .advisors(a -> a.param(CONVERSATION_ID, chatId).param(TOP_K, 100))
+//                .stream()
+//                .content();
 
-        return this.chatClient.prompt()
-                .system(s -> s.param("current_date", LocalDate.now().toString()))
-                .user(userMessageContent)
-                .advisors(a -> a.param(CONVERSATION_ID, chatId).param(TOP_K, 100))
-                .stream()
-                .content();
+		return this.chatClient.chat(chatId, LocalDate.now().toString(),userMessageContent);
     }
 
 }
