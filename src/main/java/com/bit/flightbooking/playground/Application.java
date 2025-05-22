@@ -59,6 +59,8 @@ public class Application  {
 //					vectorStore.write(new TokenTextSplitter().transform(new TextReader(termsOfServiceDocs).read()));
 					TextDocumentParser parser = new TextDocumentParser();
 					TextSegment textSegment = parser.parse(termsOfServiceDocs.getInputStream()).toTextSegment();
+					textSegment.metadata().put("metadata.source",termsOfServiceDocs.getFilename());
+					textSegment.metadata().put("metadata.charset","UTF-8");
 					Embedding embed = embeddingModel.embed(textSegment).content();
 					vectorStore.add(embed,textSegment);
 				}
