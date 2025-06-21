@@ -9,6 +9,7 @@ public class TestToolService {
 
     @Autowired
     private OpenMeteoService openMeteoService;
+
     TestToolService(){
         System.out.println("初始化");
     }
@@ -17,7 +18,15 @@ public class TestToolService {
     {
         return a+b+"";
     }
+    @Tool(description = """
+            支持音频/视频格式转换
+            支持音频/视频剪辑
+            """)
+    public void audioVideoConvert(String inputFilePath, String outputFilePath)  {
 
+
+        System.out.println("sampling");
+    }
     @Tool(description = "获取指定经纬度的天气预报")
     public String getWeather(double latitude, double longitude)
     {
