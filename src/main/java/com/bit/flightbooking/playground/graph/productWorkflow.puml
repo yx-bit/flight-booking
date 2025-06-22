@@ -1,0 +1,34 @@
+@startuml workflow_graph
+skinparam usecaseFontSize 14
+skinparam usecaseStereotypeFontSize 12
+skinparam hexagonFontSize 14
+skinparam hexagonStereotypeFontSize 12
+title "workflow graph"
+footer
+
+powered by spring-ai-alibaba
+end footer
+circle start<<input>> as __START__
+circle stop as __END__
+usecase "feedback_classifier"<<Node>>
+usecase "specific_question_classifier"<<Node>>
+usecase "recorder"<<Node>>
+hexagon "check state" as condition1<<Condition>>
+hexagon "check state" as condition2<<Condition>>
+"__START__" -down-> "feedback_classifier"
+"feedback_classifier" .down.> "condition1"
+"condition1" .down.> "specific_question_classifier": "negative"
+'"feedback_classifier" .down.> "specific_question_classifier": "negative"
+"condition1" .down.> "recorder": "positive"
+'"feedback_classifier" .down.> "recorder": "positive"
+"specific_question_classifier" .down.> "condition2"
+"condition2" .down.> "recorder": "quality"
+'"specific_question_classifier" .down.> "recorder": "quality"
+"condition2" .down.> "recorder": "transportation"
+'"specific_question_classifier" .down.> "recorder": "transportation"
+"condition2" .down.> "recorder": "others"
+'"specific_question_classifier" .down.> "recorder": "others"
+"condition2" .down.> "recorder": "after-sale"
+'"specific_question_classifier" .down.> "recorder": "after-sale"
+"recorder" -down-> "__END__"
+@enduml
